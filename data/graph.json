@@ -1,0 +1,345 @@
+{
+  "nodes": [
+    {
+      "node_id": "central_0",
+      "label": "Conversation",
+      "node_type": "central",
+      "description": "Root node of the knowledge graph.",
+      "raw_text": null,
+      "metadata": {}
+    },
+    {
+      "node_id": "27988518-074d-4580-b969-7c6bdb563a1a",
+      "label": "TechNova Q3 Review Discussion",
+      "node_type": "data",
+      "description": "Sara and Alex discuss the Q3 review for TechNova, focusing on the company's revenue performance and year-over-year growth.",
+      "raw_text": "(('Sara', 'How was the Q3 review?'), ('Alex', \"Alright, let's go through the Q3 review for TechNova. Revenue came in at $2.3 billion, up 18% year over year.\"))",
+      "metadata": {}
+    },
+    {
+      "node_id": "3e8aba1a-d127-4727-bc04-b0c6fd7ace13",
+      "label": "TechNova Q3 Revenue Breakdown",
+      "node_type": "data",
+      "description": "Sara and Alex discuss TechNova's Q3 revenue, highlighting contributions from the cloud division, enterprise software, and professional services.",
+      "raw_text": "(('Sara', \"That's solid. What's driving the growth \u2014 still the cloud division?\"), ('Alex', 'Mostly, yes. Cloud revenue was $1.4 billion, which is about 60% of total. The enterprise software segment did $600 million, and the remaining $300 million came from professional services.'))",
+      "metadata": {}
+    },
+    {
+      "node_id": "e8c2e1ab-33d1-4d84-95cb-c2dfd7d83584",
+      "label": "TechNova Q3 Margin Analysis",
+      "node_type": "data",
+      "description": "Sara and Alex discuss TechNova's Q3 financial performance, focusing on gross margin, operating margin, and net income.",
+      "raw_text": "(('Sara', \"How's the margin looking?\"), ('Alex', 'Gross margin is at 52%, up from 48% last quarter. Operating margin came in at 23%. Net income was $410 million.'))",
+      "metadata": {}
+    },
+    {
+      "node_id": "42fd14cf-a6d5-4c25-a917-0970c0f3ca05",
+      "label": "TechNova Q3 Headcount and Leadership Changes",
+      "node_type": "data",
+      "description": "Sara and Alex discuss TechNova's Q3 headcount changes, including layoffs in the hardware division and the appointment of Marcus Chen as the new CTO following David Kim's resignation.",
+      "raw_text": "(('Sara', 'What about headcount? I heard they made some changes.'), ('Alex', 'They laid off about 800 people in the hardware division back in August. Total headcount is now around 14,000. Marcus Chen took over as the new CTO in September after David Kim resigned.'))",
+      "metadata": {}
+    },
+    {
+      "node_id": "8a482d1e-c072-4602-998c-fd765f501aa9",
+      "label": "Chen's Background and AI Partnership",
+      "node_type": "data",
+      "description": "Sara and Alex discuss Marcus Chen's previous role at Amazon Web Services and his potential impact on TechNova's AI roadmap. They also mention TechNova's recent partnership with NeuralBase to integrate a large language model into their cloud platform, expected to launch in Q1 next year.",
+      "raw_text": "(('Sara', \"Right, Kim had been there since the founding in 2015. What's Chen's background?\"), ('Alex', \"He came from Amazon Web Services, was leading their infrastructure team. The board seems confident he can push the AI roadmap forward. Speaking of AI \u2014 TechNova announced a partnership with NeuralBase last month. They're integrating NeuralBase's large language model into their cloud platform. Expected to launch in Q1 next year.\"))",
+      "metadata": {}
+    },
+    {
+      "node_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "label": "TechNova Q3 Financials and NeuralBase Integration",
+      "node_type": "category",
+      "description": "TechNova Q3 review, revenue performance, year-over-year growth, revenue breakdown, cloud division, enterprise software, professional services, gross margin, operating margin, net income, debt situation, share buybacks, Q4 revenue guidance, NeuralBase integration, Deutsche Bank contract, technical integration details, API-based setup, performance targets, commercial structure, revenue-share deal, minimum spend commitments, exclusivity clause with Google Cloud, rollout timeline, enterprise tier, full GA, performance benchmarks.",
+      "raw_text": null,
+      "metadata": {}
+    },
+    {
+      "node_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4",
+      "label": "TechNova Q3-Q4 Strategy and AI",
+      "node_type": "category",
+      "description": "TechNova Q3-Q4 headcount changes, layoffs in hardware division, Marcus Chen new CTO, David Kim resignation, Chen's background, Amazon Web Services, AI partnership with NeuralBase, API-based integration, AI roadmap, rollout timeline, headquarters in Austin, Texas, new R&D center in Singapore, Q4 revenue guidance, Deutsche Bank enterprise contract, NeuralBase revenue-share deal, exclusivity clause with Google Cloud.",
+      "raw_text": null,
+      "metadata": {}
+    },
+    {
+      "node_id": "60fe35e3-0e91-4d7f-8ee2-7238e2e5fc72",
+      "label": "TechNova's Strategic Expansion and AI Focus",
+      "node_type": "data",
+      "description": "Sara and Alex discuss TechNova's challenge to Microsoft and Google in enterprise AI, mentioning the company's headquarters in Austin, Texas, and the new R&D center in Singapore aimed at leveraging Southeast Asian talent.",
+      "raw_text": "(('Sara', \"That's a direct shot at Microsoft and Google. Both are heavy in enterprise AI right now.\"), ('Alex', 'Exactly. TechNova is headquartered in Austin, Texas. They also just opened a new R&D center in Singapore to tap into Southeast Asian talent.'))",
+      "metadata": {}
+    },
+    {
+      "node_id": "d64ae892-ed6c-4955-84f6-a796a6991c16",
+      "label": "TechNova Debt and Share Buyback",
+      "node_type": "data",
+      "description": "Sara and Alex discuss TechNova's long-term debt, cash position, and recent $200 million share buyback in the context of Q3 financial performance.",
+      "raw_text": "(('Sara', \"What's the debt situation?\"), ('Alex', 'Long-term debt is $800 million. Cash and equivalents are at $1.2 billion, so net cash positive. They also did a $200 million share buyback this quarter.'))",
+      "metadata": {}
+    },
+    {
+      "node_id": "0b44b14f-5e00-4cfb-a26b-c31bc25bc3ff",
+      "label": "TechNova Q4 Revenue Guidance",
+      "node_type": "data",
+      "description": "Sara and Alex discuss TechNova's Q4 outlook, including revenue guidance and a new enterprise contract with Deutsche Bank. Key topics include NeuralBase integration and strategic financial moves.",
+      "raw_text": "(('Sara', \"Good position to be in. What's the outlook for Q4?\"), ('Alex', \"Guidance is $2.5 to $2.6 billion in revenue. They're betting big on the NeuralBase integration and a new enterprise contract with Deutsche Bank worth $120 million over three years.\"))",
+      "metadata": {}
+    },
+    {
+      "node_id": "80b21f7a-107c-4abe-8a71-2c6d92d94f42",
+      "label": "NeuralBase Integration Technical Details",
+      "node_type": "data",
+      "description": "Sara and Alex discuss the API-based setup for NeuralBase's LLM integration with TechNova's cloud platform, including inference endpoints and latency reduction strategies.",
+      "raw_text": "(('Sara', \"Can you go deeper on the NeuralBase integration? How's that technically going to work?\"), ('Alex', \"It's API-based \u2014 NeuralBase's LLM sits behind their inference endpoints, and TechNova's cloud platform routes model calls through it with a caching layer to cut latency. They're targeting sub-200ms response times at launch.\"))",
+      "metadata": {}
+    },
+    {
+      "node_id": "1b18ce33-d738-476d-9fff-2f68cd9a8197",
+      "label": "NeuralBase Partnership Commercial Terms",
+      "node_type": "data",
+      "description": "Sara and Alex discuss the commercial structure of the NeuralBase partnership, including revenue-sharing, minimum spend commitments, and an exclusivity clause with Google Cloud.",
+      "raw_text": "(('Sara', \"And what's the commercial structure look like?\"), ('Alex', \"It's a revenue-share deal \u2014 NeuralBase gets a cut of usage-based billing, plus TechNova committed to a $50 million minimum spend over two years. There's also an exclusivity clause blocking NeuralBase from partnering with Google Cloud for eighteen months.\"))",
+      "metadata": {}
+    },
+    {
+      "node_id": "0ee8d69a-9d12-4fe5-b3db-9a43ea3ec0d7",
+      "label": "NeuralBase Integration Rollout Timeline",
+      "node_type": "data",
+      "description": "Sara and Alex discuss the rollout timeline for NeuralBase integration beyond Q1, targeting full general availability (GA) across all pricing tiers by Q3 next year, contingent on performance benchmarks from the pilot.",
+      "raw_text": "(('Sara', 'That exclusivity clause is a big deal. Any update on rollout timeline beyond Q1?'), ('Alex', 'Yeah, Q1 is just the initial rollout to enterprise tier customers. Full GA across all pricing tiers is targeted for Q3 next year, pending performance benchmarks from the pilot.'))",
+      "metadata": {}
+    },
+    {
+      "node_id": "c135847b-3745-4b96-8f84-6e8eef6485b5",
+      "label": "Alex's Gaming PC Build",
+      "node_type": "data",
+      "description": "Sara and Alex discuss Alex's gaming PC build, mentioning components like the RTX 4080 and Ryzen 7 7800X3D.",
+      "raw_text": "(('Sara', 'Random question \u2014 are you still building that gaming PC?'), ('Alex', 'Yeah, finally ordered the parts. Went with an RTX 4080 and a Ryzen 7 7800X3D.'))",
+      "metadata": {}
+    },
+    {
+      "node_id": "73236ec4-ae63-48d3-ad31-c1a8541ecb31",
+      "label": "Alex's PC Storage and Cooling",
+      "node_type": "data",
+      "description": "Sara and Alex discuss Alex's gaming PC build, focusing on storage and cooling components. Alex mentions using a 2TB NVMe SSD and an AIO liquid cooler with a 240mm radiator, housed in a Fractal Design North case.",
+      "raw_text": "(('Sara', 'Nice, what about storage and cooling?'), ('Alex', \"2TB NVMe SSD, and I'm doing an AIO liquid cooler, 240mm radiator. Case is a Fractal Design North.\"))",
+      "metadata": {}
+    },
+    {
+      "node_id": "4373a526-c49c-4fe3-9b63-9b04f3b7004d",
+      "label": "Alex's Gaming PC Build Cost",
+      "node_type": "data",
+      "description": "Sara and Alex discuss the total cost of Alex's gaming PC build, including the monitor. The conversation follows their discussion on specific components like the RTX 4080 and Ryzen 7 7800X3D.",
+      "raw_text": "(('Sara', 'How much did the whole build run you?'), ('Alex', 'Around $2,200 total including the monitor. A little over budget but worth it.'))",
+      "metadata": {}
+    },
+    {
+      "node_id": "e94c5fff-cd4b-4d94-a7f6-d60b2aa0a279",
+      "label": "Alex's Gaming PC Build and Plans",
+      "node_type": "category",
+      "description": "Alex's gaming PC build, RTX 4080, Ryzen 7 7800X3D, 2TB NVMe SSD, AIO liquid cooler, 240mm radiator, Fractal Design North case, total cost, gaming plans, Cyberpunk with path tracing.",
+      "raw_text": null,
+      "metadata": {}
+    },
+    {
+      "node_id": "48f45efb-d3e3-45e1-8287-b9c1ca14cf10",
+      "label": "Alex's First Game on New PC",
+      "node_type": "data",
+      "description": "Sara asks Alex about the first game he plans to play on his new gaming PC build. Alex mentions playing Cyberpunk with path tracing enabled, highlighting the capability to max the settings.",
+      "raw_text": "(('Sara', 'Are you gonna play anything specific first?'), ('Alex', 'Probably Cyberpunk with path tracing on \u2014 finally can max the settings.'))",
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "source_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "target_id": "27988518-074d-4580-b969-7c6bdb563a1a"
+    },
+    {
+      "source_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "target_id": "3e8aba1a-d127-4727-bc04-b0c6fd7ace13"
+    },
+    {
+      "source_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "target_id": "e8c2e1ab-33d1-4d84-95cb-c2dfd7d83584"
+    },
+    {
+      "source_id": "central_0",
+      "target_id": "e0a50c10-1004-4762-a13b-ce3db970d888"
+    },
+    {
+      "source_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4",
+      "target_id": "42fd14cf-a6d5-4c25-a917-0970c0f3ca05"
+    },
+    {
+      "source_id": "central_0",
+      "target_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4"
+    },
+    {
+      "source_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4",
+      "target_id": "8a482d1e-c072-4602-998c-fd765f501aa9"
+    },
+    {
+      "source_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4",
+      "target_id": "60fe35e3-0e91-4d7f-8ee2-7238e2e5fc72"
+    },
+    {
+      "source_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "target_id": "d64ae892-ed6c-4955-84f6-a796a6991c16"
+    },
+    {
+      "source_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "target_id": "0b44b14f-5e00-4cfb-a26b-c31bc25bc3ff"
+    },
+    {
+      "source_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4",
+      "target_id": "0b44b14f-5e00-4cfb-a26b-c31bc25bc3ff"
+    },
+    {
+      "source_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "target_id": "80b21f7a-107c-4abe-8a71-2c6d92d94f42"
+    },
+    {
+      "source_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4",
+      "target_id": "80b21f7a-107c-4abe-8a71-2c6d92d94f42"
+    },
+    {
+      "source_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "target_id": "1b18ce33-d738-476d-9fff-2f68cd9a8197"
+    },
+    {
+      "source_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4",
+      "target_id": "1b18ce33-d738-476d-9fff-2f68cd9a8197"
+    },
+    {
+      "source_id": "e0a50c10-1004-4762-a13b-ce3db970d888",
+      "target_id": "0ee8d69a-9d12-4fe5-b3db-9a43ea3ec0d7"
+    },
+    {
+      "source_id": "65e6f114-88aa-43f9-9f69-4b96217cc6f4",
+      "target_id": "0ee8d69a-9d12-4fe5-b3db-9a43ea3ec0d7"
+    },
+    {
+      "source_id": "e94c5fff-cd4b-4d94-a7f6-d60b2aa0a279",
+      "target_id": "c135847b-3745-4b96-8f84-6e8eef6485b5"
+    },
+    {
+      "source_id": "e94c5fff-cd4b-4d94-a7f6-d60b2aa0a279",
+      "target_id": "73236ec4-ae63-48d3-ad31-c1a8541ecb31"
+    },
+    {
+      "source_id": "central_0",
+      "target_id": "e94c5fff-cd4b-4d94-a7f6-d60b2aa0a279"
+    },
+    {
+      "source_id": "e94c5fff-cd4b-4d94-a7f6-d60b2aa0a279",
+      "target_id": "4373a526-c49c-4fe3-9b63-9b04f3b7004d"
+    },
+    {
+      "source_id": "e94c5fff-cd4b-4d94-a7f6-d60b2aa0a279",
+      "target_id": "48f45efb-d3e3-45e1-8287-b9c1ca14cf10"
+    }
+  ],
+  "data_relations": [
+    {
+      "source_id": "27988518-074d-4580-b969-7c6bdb563a1a",
+      "target_id": "3e8aba1a-d127-4727-bc04-b0c6fd7ace13"
+    },
+    {
+      "source_id": "27988518-074d-4580-b969-7c6bdb563a1a",
+      "target_id": "e8c2e1ab-33d1-4d84-95cb-c2dfd7d83584"
+    },
+    {
+      "source_id": "3e8aba1a-d127-4727-bc04-b0c6fd7ace13",
+      "target_id": "e8c2e1ab-33d1-4d84-95cb-c2dfd7d83584"
+    },
+    {
+      "source_id": "27988518-074d-4580-b969-7c6bdb563a1a",
+      "target_id": "42fd14cf-a6d5-4c25-a917-0970c0f3ca05"
+    },
+    {
+      "source_id": "3e8aba1a-d127-4727-bc04-b0c6fd7ace13",
+      "target_id": "42fd14cf-a6d5-4c25-a917-0970c0f3ca05"
+    },
+    {
+      "source_id": "42fd14cf-a6d5-4c25-a917-0970c0f3ca05",
+      "target_id": "e8c2e1ab-33d1-4d84-95cb-c2dfd7d83584"
+    },
+    {
+      "source_id": "42fd14cf-a6d5-4c25-a917-0970c0f3ca05",
+      "target_id": "8a482d1e-c072-4602-998c-fd765f501aa9"
+    },
+    {
+      "source_id": "60fe35e3-0e91-4d7f-8ee2-7238e2e5fc72",
+      "target_id": "8a482d1e-c072-4602-998c-fd765f501aa9"
+    },
+    {
+      "source_id": "27988518-074d-4580-b969-7c6bdb563a1a",
+      "target_id": "d64ae892-ed6c-4955-84f6-a796a6991c16"
+    },
+    {
+      "source_id": "d64ae892-ed6c-4955-84f6-a796a6991c16",
+      "target_id": "e8c2e1ab-33d1-4d84-95cb-c2dfd7d83584"
+    },
+    {
+      "source_id": "0b44b14f-5e00-4cfb-a26b-c31bc25bc3ff",
+      "target_id": "8a482d1e-c072-4602-998c-fd765f501aa9"
+    },
+    {
+      "source_id": "27988518-074d-4580-b969-7c6bdb563a1a",
+      "target_id": "80b21f7a-107c-4abe-8a71-2c6d92d94f42"
+    },
+    {
+      "source_id": "0b44b14f-5e00-4cfb-a26b-c31bc25bc3ff",
+      "target_id": "80b21f7a-107c-4abe-8a71-2c6d92d94f42"
+    },
+    {
+      "source_id": "80b21f7a-107c-4abe-8a71-2c6d92d94f42",
+      "target_id": "8a482d1e-c072-4602-998c-fd765f501aa9"
+    },
+    {
+      "source_id": "0b44b14f-5e00-4cfb-a26b-c31bc25bc3ff",
+      "target_id": "1b18ce33-d738-476d-9fff-2f68cd9a8197"
+    },
+    {
+      "source_id": "1b18ce33-d738-476d-9fff-2f68cd9a8197",
+      "target_id": "80b21f7a-107c-4abe-8a71-2c6d92d94f42"
+    },
+    {
+      "source_id": "1b18ce33-d738-476d-9fff-2f68cd9a8197",
+      "target_id": "8a482d1e-c072-4602-998c-fd765f501aa9"
+    },
+    {
+      "source_id": "0ee8d69a-9d12-4fe5-b3db-9a43ea3ec0d7",
+      "target_id": "1b18ce33-d738-476d-9fff-2f68cd9a8197"
+    },
+    {
+      "source_id": "0ee8d69a-9d12-4fe5-b3db-9a43ea3ec0d7",
+      "target_id": "8a482d1e-c072-4602-998c-fd765f501aa9"
+    },
+    {
+      "source_id": "73236ec4-ae63-48d3-ad31-c1a8541ecb31",
+      "target_id": "c135847b-3745-4b96-8f84-6e8eef6485b5"
+    },
+    {
+      "source_id": "4373a526-c49c-4fe3-9b63-9b04f3b7004d",
+      "target_id": "c135847b-3745-4b96-8f84-6e8eef6485b5"
+    },
+    {
+      "source_id": "4373a526-c49c-4fe3-9b63-9b04f3b7004d",
+      "target_id": "73236ec4-ae63-48d3-ad31-c1a8541ecb31"
+    },
+    {
+      "source_id": "48f45efb-d3e3-45e1-8287-b9c1ca14cf10",
+      "target_id": "c135847b-3745-4b96-8f84-6e8eef6485b5"
+    },
+    {
+      "source_id": "4373a526-c49c-4fe3-9b63-9b04f3b7004d",
+      "target_id": "48f45efb-d3e3-45e1-8287-b9c1ca14cf10"
+    }
+  ],
+  "context": "Sara asked Alex about the Q3 review. Alex responded by discussing the Q3 review for TechNova, mentioning that the company's revenue came in at $2.3 billion, which is an 18% increase year over year. Sara then asked Alex about the drivers of this growth, and Alex confirmed that the cloud division was a major contributor. He detailed that cloud revenue was $1.4 billion, accounting for about 60% of the total revenue. Additionally, the enterprise software segment generated $600 million, and professional services contributed $300 million. Sara then asked Alex about the margin, and Alex provided details: gross margin is at 52%, up from 48% last quarter, operating margin came in at 23%, and net income was $410 million. Sara then asked Alex about headcount changes. Alex mentioned that TechNova laid off about 800 people in the hardware division back in August, bringing the total headcount to around 14,000. He also noted that Marcus Chen took over as the new CTO in September after David Kim resigned. Sara noted that Kim had been with the company since its founding in 2015 and asked about Chen's background. Alex mentioned that Chen came from Amazon Web Services, where he led their infrastructure team. He also mentioned that TechNova announced a partnership with NeuralBase last month to integrate NeuralBase's large language model into their cloud platform, expected to launch in Q1 next year. Sara noted that this move is a direct challenge to Microsoft and Google in the enterprise AI space. Alex added that TechNova is headquartered in Austin, Texas, and recently opened a new R&D center in Singapore to tap into Southeast Asian talent. Sara then asked Alex about the debt situation. Alex mentioned that long-term debt is $800 million, cash and equivalents are at $1.2 billion, making the company net cash positive. He also noted that TechNova did a $200 million share buyback this quarter. Sara then asked Alex about the outlook for Q4. Alex mentioned that guidance is $2.5 to $2.6 billion in revenue. They're betting big on the NeuralBase integration and a new enterprise contract with Deutsche Bank worth $120 million over three years. Sara then asked Alex to go deeper on the NeuralBase integration. Alex explained that it's API-based, with NeuralBase's LLM behind inference endpoints, and TechNova's cloud platform routing model calls through it with a caching layer to cut latency, targeting sub-200ms response times at launch. Sara then asked Alex about the commercial structure of the NeuralBase partnership. Alex mentioned that it's a revenue-share deal, with NeuralBase getting a cut of usage-based billing, plus TechNova committed to a $50 million minimum spend over two years. There's also an exclusivity clause blocking NeuralBase from partnering with Google Cloud for eighteen months. Sara noted that the exclusivity clause is significant and asked about the rollout timeline beyond Q1. Alex mentioned that Q1 is just the initial rollout to enterprise tier customers, with full GA across all pricing tiers targeted for Q3 next year, pending performance benchmarks from the pilot. Sara then asked Alex a random question about his gaming PC build, and Alex mentioned that he finally ordered the parts, including an RTX 4080 and a Ryzen 7 7800X3D. Sara asked about storage and cooling, and Alex mentioned a 2TB NVMe SSD and an AIO liquid cooler with a 240mm radiator, and that the case is a Fractal Design North. Sara then asked Alex about the total cost of the build, and Alex mentioned it was around $2,200 including the monitor. Sara asked Alex if he was going to play anything specific first, and Alex mentioned probably Cyberpunk with path tracing on, finally able to max the settings."
+}
