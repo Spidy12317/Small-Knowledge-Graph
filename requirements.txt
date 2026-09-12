@@ -1,0 +1,15 @@
+anthropic==0.121.0
+opentelemetry-api==1.44.0
+opentelemetry-sdk==1.44.0
+openai==2.53.0
+groq==1.7.0
+pydantic==2.13.4
+pydantic-settings==2.15.0
+python-dotenv==1.2.2
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+httpx==0.28.1
+sqlalchemy==2.0.52
+asyncpg==0.31.0
+alembic==1.19.2
+greenlet==3.5.5
