@@ -14,7 +14,7 @@ MAX_PIPELINE_TRACE_HISTORY_PER_GRAPH = 200
 
 class AppState:
     def __init__(self) -> None:
-        self.llm: LLMService = LLMService(provider=enums.LLMProvider.ANTHROPIC)
+        self.llm: LLMService = LLMService(provider=enums.LLMProvider.GEMINI)
         self.graph_id: uuid.UUID | None = None
         self.lock = asyncio.Lock()
         # Display-only trace of recent chunk inserts per graph, kept purely in memory

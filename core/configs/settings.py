@@ -16,6 +16,14 @@ class CommonSettings(BaseSettings):
         extra="ignore",
     )
 
+class GeminiSettings(CommonSettings):
+    GEMINI_API_KEY: str | None = Field(default=None)
+    GEMINI_MODEL: str = Field(default="gemini-3.5-flash-lite")
+    MAX_CONCURRENT: int = Field(default=8)
+    LLM_TEMPERATURE: float = Field(default=0)
+
+    def is_configured(self) -> bool:
+        return bool(self.GEMINI_API_KEY and self.GEMINI_MODEL)
 
 class AzureOpenAISettings(CommonSettings):
     AZURE_OPENAI_ENDPOINT: str | None = Field(default=None)
@@ -119,6 +127,7 @@ class OtelSettings(CommonSettings):
 
 
 class ConfigManager:
+    _gemini_settings: GeminiSettings | None = None
     _azure_openai_settings: AzureOpenAISettings | None = None
     _azure_gpt5_settings: AzureGPT5Settings | None = None
     _anthropic_settings: AnthropicSettings | None = None
@@ -127,6 +136,12 @@ class ConfigManager:
     _graph_settings: GraphSettings | None = None
     _database_settings: DatabaseSettings | None = None
     _otel_settings: OtelSettings | None = None
+
+    @property
+    def gemini_settings(self) -> GeminiSettings:
+        if self._gemini_settings is None:
+            self._gemini_settings = GeminiSettings()
+        return self._gemini_settings
 
     @property
     def azure_openai_settings(self) -> AzureOpenAISettings:
@@ -182,6 +197,9 @@ config = ConfigManager()
 
 def get_azure_openai_settings() -> AzureOpenAISettings:
     return config.azure_openai_settings
+
+def get_gemini_settings() -> GeminiSettings:
+    return config.gemini_settings
 
 def get_azure_gpt5_settings() -> AzureGPT5Settings:
     return config.azure_gpt5_settings

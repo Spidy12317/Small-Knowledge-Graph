@@ -8,6 +8,7 @@ from services.llm_service.utils.azure_openai import AzureOpenAIClient
 from services.llm_service.utils.anthropic import AnthropicClient
 from services.llm_service.utils.openai import OpenAIClient
 from services.llm_service.utils.groq import GroqClient
+from services.llm_service.utils.gemini import GeminiClient
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,8 @@ class LLMService(LLMBase):
                 self._client = OpenAIClient(model=model, temperature=temperature)
             case enums.LLMProvider.GROQ:
                 self._client = GroqClient(model=model, temperature=temperature)
+            case enums.LLMProvider.GEMINI:
+                self._client = GeminiClient(model=model, temperature=temperature)
             case _:
                 raise ConfigurationError(f"Unsupported LLM provider: {provider!r}")
 

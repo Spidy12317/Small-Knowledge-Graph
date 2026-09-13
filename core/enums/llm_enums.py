@@ -7,3 +7,4 @@ class LLMProvider(str, Enum):
     ANTHROPIC = "anthropic"
     OPENAI = "openai"
     GROQ = "groq"
+    GEMINI = "gemini"
