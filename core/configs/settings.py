@@ -87,6 +87,18 @@ class GraphSettings(CommonSettings):
     GRAPH_MAX_CONCURRENT_INSERTIONS: int = Field(default=4)
 
 
+class TracingSettings(CommonSettings):
+    OTEL_EXPORTER: str = Field(default="postgres")
+    OTEL_SERVICE_NAME: str = Field(default="skg")
+    OTEL_EXPORTER_OTLP_ENDPOINT: str = Field(default="http://localhost:4318/v1/traces")
+
+    def exporter(self) -> str:
+        value = self.OTEL_EXPORTER.strip().lower()
+        if value not in {"postgres", "otlp"}:
+            raise ValueError("OTEL_EXPORTER must be 'postgres' or 'otlp'")
+        return value
+
+
 class DatabaseSettings(CommonSettings):
     POSTGRES_HOST: str | None = Field(default=None)
     POSTGRES_DB: str | None = Field(default=None)
@@ -118,14 +130,6 @@ class DatabaseSettings(CommonSettings):
             "server_settings": {"statement_timeout": str(self.POSTGRES_STATEMENT_TIMEOUT_MS)},
         }
 
-
-class OtelSettings(CommonSettings):
-    OTEL_ENABLED: bool = Field(default=False)
-    OTEL_SERVICE_NAME: str = Field(default="skg")
-    OTEL_TRACES_FILE: str = Field(default="data/traces.jsonl")
-    OTEL_MAX_CONTENT_LENGTH: int = Field(default=100_000)
-
-
 class ConfigManager:
     _gemini_settings: GeminiSettings | None = None
     _azure_openai_settings: AzureOpenAISettings | None = None
@@ -135,7 +139,7 @@ class ConfigManager:
     _groq_settings: GroqSettings | None = None
     _graph_settings: GraphSettings | None = None
     _database_settings: DatabaseSettings | None = None
-    _otel_settings: OtelSettings | None = None
+    _tracing_settings: TracingSettings | None = None
 
     @property
     def gemini_settings(self) -> GeminiSettings:
@@ -186,11 +190,10 @@ class ConfigManager:
         return self._database_settings
 
     @property
-    def otel_settings(self) -> OtelSettings:
-        if self._otel_settings is None:
-            self._otel_settings = OtelSettings()
-        return self._otel_settings
-
+    def tracing_settings(self) -> TracingSettings:
+        if self._tracing_settings is None:
+            self._tracing_settings = TracingSettings()
+        return self._tracing_settings
 
 config = ConfigManager()
 
@@ -219,5 +222,5 @@ def get_graph_settings() -> GraphSettings:
 def get_database_settings() -> DatabaseSettings:
     return config.database_settings
 
-def get_otel_settings() -> OtelSettings:
-    return config.otel_settings
+def get_tracing_settings() -> TracingSettings:
+    return config.tracing_settings

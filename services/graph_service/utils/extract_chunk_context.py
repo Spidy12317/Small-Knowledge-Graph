@@ -4,10 +4,12 @@ import uuid
 
 import services
 from core import constants
+from core.tracing import traced
 from repository import GraphRepository
 from services.graph_service.utils.llm_utils import invoke_llm_and_parse_json
 
 
+@traced
 async def extract_chunk_context(chunk: str, graph_id: uuid.UUID, llm: services.LLMService) -> str:
     current_context = await GraphRepository.get_graph_context(graph_id)
     sys_msg, user_prompt = constants.Prompts.extract_chunk_context(

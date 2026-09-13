@@ -3,11 +3,13 @@ from __future__ import annotations
 import uuid
 
 import services
+from core.tracing import traced
 from services.graph_service.utils.find_new_node_insert_location import find_insert_location
 from services.graph_service.utils.extract_chunk_context import extract_chunk_context
 from services.graph_service.utils.insert_new_node import insert
 
 
+@traced
 async def insert_chunk(
     chunk: str,
     graph_id: uuid.UUID,

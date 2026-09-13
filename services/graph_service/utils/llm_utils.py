@@ -4,6 +4,7 @@ import json
 import re
 
 import services
+from core.tracing import traced
 
 
 def _strip_markdown(text: str) -> str:
@@ -11,6 +12,7 @@ def _strip_markdown(text: str) -> str:
     return re.sub(r"\s*```$", "", text.strip(), flags=re.MULTILINE).strip()
 
 
+@traced
 async def invoke_llm_and_parse_json(
     sys_msg: str,
     user_prompt: str,

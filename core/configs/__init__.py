@@ -8,5 +8,5 @@ __all__ = [
     "get_groq_settings",
     "get_graph_settings",
     "get_database_settings",
-    "get_otel_settings",
+    "get_tracing_settings",
 ]

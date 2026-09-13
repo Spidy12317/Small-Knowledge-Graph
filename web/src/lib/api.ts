@@ -6,6 +6,7 @@ import type {
   InsertResponse,
   NodeDetail,
   QueryResponse,
+  TraceReplayResponse,
 } from "./types";
 
 class ApiError extends Error {
@@ -57,6 +58,8 @@ export const api = {
     }),
   getPipelineHistory: (graphId?: string | null) =>
     request<InsertResponse[]>(withGraphParam("/api/build/pipeline-history", graphId)),
+  getReplaySteps: (graphId?: string | null) =>
+    request<TraceReplayResponse>(withGraphParam("/api/build/steps", graphId)),
   listGraphs: () => request<GraphsListResponse>("/api/graphs"),
   createGraph: (name: string) =>
     request<GraphSummary>("/api/graphs", {

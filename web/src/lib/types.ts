@@ -97,6 +97,38 @@ export interface InsertPipeline {
   parent_label_description_updates: ParentLabelDescriptionUpdate[];
 }
 
+export interface TraceLlmCall {
+  step_index: number;
+  status: string;
+  system: string;
+  user: string;
+  output: unknown;
+}
+
+export interface TraceSpanStep {
+  step_index: number;
+  name: string;
+  status: string;
+}
+
+export interface TraceReplayStep {
+  index: number;
+  trace_id: string;
+  started_at: string;
+  status: string;
+  chunk: string;
+  chunk_context: string;
+  added_node_ids: string[];
+  spans: TraceSpanStep[];
+  llm_calls: TraceLlmCall[];
+  graph: GraphData;
+}
+
+export interface TraceReplayResponse {
+  graph_id: string | null;
+  steps: TraceReplayStep[];
+}
+
 export interface InsertResponse {
   chunk: string;
   inserted_at: string;
