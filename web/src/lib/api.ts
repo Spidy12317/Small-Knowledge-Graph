@@ -6,6 +6,7 @@ import type {
   InsertResponse,
   NodeDetail,
   QueryResponse,
+  TraceReplayResponse,
 } from "./types";
 
 class ApiError extends Error {

@@ -11,6 +11,7 @@ from sqlalchemy.orm import aliased
 
 from core.enums import NodeType
 from core.exceptions import NotFoundError
+from core.tracing import traced
 from db.base import get_sessionmaker
 from db.models import DataRelationRow, EdgeRow, GraphRow, NodeRow
 from repository.graph_repository.models import (
@@ -203,6 +204,7 @@ class GraphRepository:
         return context or ""
 
     @staticmethod
+    @traced
     async def update_graph_context(graph_id: uuid.UUID, new_context: str) -> None:
         async with get_sessionmaker()() as session:
             await session.execute(
@@ -416,6 +418,7 @@ class GraphRepository:
             )
 
     @staticmethod
+    @traced
     async def apply_mutations(graph_id: uuid.UUID, plan: GraphMutationPlan) -> None:
         """Applies a fully-resolved GraphMutationPlan in one transaction: a handful
         of batched INSERT/UPDATE/DELETE statements, never one call per node/edge."""

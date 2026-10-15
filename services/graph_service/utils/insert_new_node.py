@@ -6,6 +6,7 @@ import logging
 from typing import List
 
 from core import constants, configs, enums
+from core.tracing import traced
 import services
 from repository import GraphRepository
 from repository.graph_repository.models import GraphMutationPlan, NodeLabelUpdate
@@ -185,6 +186,7 @@ def _build_graph_paths_text(insertion_points: List[models.CandidateNode]) -> str
     return "\n".join(f"  - {p}" for p in unique_path_lines)
 
 
+@traced
 async def _generate_new_data_node(
     chunk: str,
     insertion_points: List[models.CandidateNode],
@@ -212,6 +214,7 @@ async def _generate_new_data_node(
     return new_node
 
 
+@traced
 async def _update_parent_node_label_and_description(
     parent_node: dict,
     chunk: str,
@@ -250,6 +253,7 @@ async def _update_parent_node_label_and_description(
     }
 
 
+@traced
 async def _determine_attachment_plan_for_parent(
     parent_node: dict,
     chunk: str,
@@ -430,6 +434,7 @@ def _build_reorganization_plan(
     }
 
 
+@traced
 async def _generate_umbrella_fallback_plan(
     parent_node_id: str,
     parent_node: models.Node,

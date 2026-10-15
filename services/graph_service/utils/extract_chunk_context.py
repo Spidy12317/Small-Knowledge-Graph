@@ -4,6 +4,7 @@ import uuid
 
 import services
 from core import constants
+from core.tracing import traced
 from repository import GraphRepository
 from services.graph_service.utils.insert_audit import InsertAuditCollector
 from services.graph_service.utils.llm_utils import invoke_llm_traced

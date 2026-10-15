@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from core.exceptions import BaseAppException
+from core.tracing import bind_postgres_writer, setup_tracing, shutdown_tracing
 from routes import build, graph, graphs, health, query
 from services.app_state import state
 
@@ -18,8 +19,11 @@ logging.basicConfig(level=logging.INFO)
 async def lifespan(app: FastAPI):
     # DB access can't happen at import time, so the default graph is found/seeded
     # here rather than eagerly in the AppState singleton's constructor.
+    setup_tracing()
+    bind_postgres_writer()
     await state.bootstrap()
     yield
+    await shutdown_tracing()
 
 
 app = FastAPI(title="SKG API", version="0.1.0", lifespan=lifespan)

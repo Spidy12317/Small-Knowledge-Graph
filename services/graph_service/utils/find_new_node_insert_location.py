@@ -9,6 +9,7 @@ from typing import List
 from core import constants, configs, enums
 
 import services
+from core.tracing import traced
 from repository import GraphRepository
 from services.graph_service import models, utils
 from services.graph_service.utils.insert_audit import InsertAuditCollector
@@ -22,6 +23,7 @@ MAX_CONCURRENT_EVALUATIONS = graph_settings.GRAPH_MAX_CONCURRENT_EVALUATIONS
 DATA_BATCH_SIZE = graph_settings.GRAPH_MAX_NODE_CHILDREN
 
 
+@traced
 async def find_insert_location(
     chunk: str,
     graph_id: uuid.UUID,

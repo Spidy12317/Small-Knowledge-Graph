@@ -5,6 +5,7 @@ import re
 from typing import TYPE_CHECKING
 
 import services
+from core.tracing import traced
 
 if TYPE_CHECKING:
     from services.graph_service.utils.insert_audit import InsertAuditCollector
@@ -15,6 +16,7 @@ def _strip_markdown(text: str) -> str:
     return re.sub(r"\s*```$", "", text.strip(), flags=re.MULTILINE).strip()
 
 
+@traced
 async def invoke_llm_and_parse_json(
     sys_msg: str,
     user_prompt: str,

@@ -6,6 +6,9 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, HTTPException, Query
 
+from core.tracing import current_trace_id
+from core.tracing.reader import get_trace, list_traces
+from core.tracing.replay import replay_steps
 from models.graph import InsertRequest, serialize_candidate, serialize_node
 from repository import GraphRepository
 from services.app_state import state
@@ -59,6 +62,34 @@ async def get_pipeline_history(graph_id: uuid.UUID | None = Query(default=None))
     direct API call)."""
     target_graph_id = graph_id or state.graph_id
     return list(state.pipeline_trace_history_by_graph_id.get(target_graph_id, []))
+
+
+@router.get("/traces")
+async def get_graph_traces(graph_id: uuid.UUID | None = Query(default=None)):
+    """Graph updates recorded for this graph, oldest first."""
+    target_graph_id = graph_id or state.graph_id
+    if target_graph_id is None:
+        return []
+    return await list_traces(target_graph_id)
+
+
+@router.get("/steps")
+async def get_replayed_steps(graph_id: uuid.UUID | None = Query(default=None)):
+    """Each recorded graph update, with the graph as it would look after that
+    update. Replayed in memory from the stored decisions. Nothing is written."""
+    target_graph_id = graph_id or state.graph_id
+    if target_graph_id is None:
+        return {"graph_id": None, "steps": []}
+    return await replay_steps(target_graph_id)
+
+
+@router.get("/traces/{trace_id}")
+async def get_graph_trace(trace_id: str):
+    """One graph update and the decisions made during it, in step order."""
+    trace = await get_trace(trace_id)
+    if trace is None:
+        raise HTTPException(status_code=404, detail="trace not found")
+    return trace
 
 
 @router.post("/insert")
@@ -136,6 +167,7 @@ async def insert_chunk(payload: InsertRequest):
         logger.exception("Failed to write insert audit for graph %s step %s", target_graph_id, step)
 
     response = {
+        "trace_id": current_trace_id(),
         "chunk": chunk,
         "inserted_at": inserted_at,
         "checkpoint": checkpoint_paths(target_graph_id, step),
