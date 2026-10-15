@@ -7,6 +7,7 @@ import {
   SearchCode,
   SlidersHorizontal,
   GitBranch,
+  History,
 } from "lucide-react";
 import { GraphSwitcher } from "./GraphSwitcher";
 
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { to: "/explore", label: "Explore", icon: Waypoints },
   { to: "/build", label: "Build", icon: Sparkles },
   { to: "/steps", label: "Steps", icon: GitBranch },
+  { to: "/replay", label: "Replay", icon: History },
   { to: "/query", label: "Query", icon: SearchCode },
   { to: "/settings", label: "Settings", icon: SlidersHorizontal },
 ];

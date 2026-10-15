@@ -97,12 +97,19 @@ export interface InsertPipeline {
   parent_label_description_updates: ParentLabelDescriptionUpdate[];
 }
 
+export interface InsertCheckpoint {
+  step: number;
+  graph_file: string;
+  audit_file: string;
+}
+
 export interface InsertResponse {
   chunk: string;
   inserted_at: string;
   graph: GraphData;
   diff: InsertDiff;
   pipeline: InsertPipeline;
+  checkpoint?: InsertCheckpoint;
 }
 
 export interface HealthResponse {

@@ -57,6 +57,16 @@ export const api = {
     }),
   getPipelineHistory: (graphId?: string | null) =>
     request<InsertResponse[]>(withGraphParam("/api/build/pipeline-history", graphId)),
+  listCheckpointFolders: () =>
+    request<{ graph_ids: string[] }>("/api/build/checkpoints").then((r) => r.graph_ids),
+  listCheckpointSteps: (graphId: string) =>
+    request<{ graph_id: string; steps: number[] }>(
+      `/api/build/checkpoints/${encodeURIComponent(graphId)}`,
+    ),
+  getCheckpointGraph: (graphId: string, step: number) =>
+    request<GraphData>(
+      `/api/build/checkpoints/${encodeURIComponent(graphId)}/${step}`,
+    ),
   listGraphs: () => request<GraphsListResponse>("/api/graphs"),
   createGraph: (name: string) =>
     request<GraphSummary>("/api/graphs", {
