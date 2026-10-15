@@ -11,7 +11,8 @@ import services
 from repository import GraphRepository
 from repository.graph_repository.models import GraphMutationPlan, NodeLabelUpdate
 from services.graph_service import models
-from services.graph_service.utils.llm_utils import invoke_llm_and_parse_json
+from services.graph_service.utils.insert_audit import InsertAuditCollector
+from services.graph_service.utils.llm_utils import invoke_llm_traced
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,30 @@ MAX_NODE_CHILDREN = graph_settings.GRAPH_MAX_NODE_CHILDREN
 MAX_CONCURRENT_INSERTIONS = graph_settings.GRAPH_MAX_CONCURRENT_INSERTIONS
 
 
+def _capacity_limit_for_node(node: models.Node) -> int:
+    """Central nodes use the root fan-out limit; all other nodes (categories, data) use the per-node limit."""
+    if node.node_type == enums.NodeType.CENTRAL:
+        return MAX_ROOT_CHILDREN
+    return MAX_NODE_CHILDREN
+
+
+def _direct_child_count(prefetched_children: dict[str, list[models.Node]], parent_id: str) -> int:
+    children = prefetched_children.get(parent_id, [])
+    return len({child.node_id for child in children})
+
+
+def _capacity_limit_for_node(node: models.Node) -> int:
+    """Central nodes use the root fan-out limit; all other nodes (categories, data) use the per-node limit."""
+    if node.node_type == enums.NodeType.CENTRAL:
+        return MAX_ROOT_CHILDREN
+    return MAX_NODE_CHILDREN
+
+
+def _direct_child_count(prefetched_children: dict[str, list[models.Node]], parent_id: str) -> int:
+    children = prefetched_children.get(parent_id, [])
+    return len({child.node_id for child in children})
+
+
 @traced
 async def insert(
     chunk: str,
@@ -31,6 +56,7 @@ async def insert(
     llm: services.LLMService,
     chunk_context: str = "",
     update_graph: bool = True,
+    collector: InsertAuditCollector | None = None,
 ) -> tuple[models.Node, List[dict], List[dict]]:
     # Step 1: classify insertion points by node type
     central_insertion_point, category_insertion_points, data_insertion_points = (
@@ -40,9 +66,8 @@ async def insert(
     # Step 2: single bulk prefetch — all nodes, children, and parents needed for the
     # entire operation, plus the central node id, in a fixed handful of queries
     # regardless of how many insertion points there are.
-    prefetch, central_node = await asyncio.gather(
-        GraphRepository.prefetch_insertion_context(graph_id, [ip.node_id for ip in insertion_points]),
-        GraphRepository.get_central_node(graph_id),
+    prefetch = await GraphRepository.prefetch_insertion_context(
+        graph_id, [ip.node_id for ip in insertion_points],
     )
 
     # Step 3: resolve to unique parents (DATA points resolved to their parent via prefetch)
@@ -52,7 +77,6 @@ async def insert(
         data_insertion_points,
         prefetch.nodes,
         prefetch.parents_map,
-        central_node.node_id,
     )
 
     # Step 4: concurrently generate the new node label, plan all parent attachments,
@@ -61,18 +85,26 @@ async def insert(
     concurrency_semaphore = asyncio.Semaphore(MAX_CONCURRENT_INSERTIONS)
     plan_attachment_tasks = [
         asyncio.create_task(
-            _determine_attachment_plan_for_parent(parent_node, chunk, prefetch.children_map, llm, concurrency_semaphore, chunk_context=chunk_context)
+            _determine_attachment_plan_for_parent(
+                parent_node, chunk, prefetch.children_map, llm, concurrency_semaphore,
+                chunk_context=chunk_context, collector=collector,
+            )
         )
         for parent_node in resolved_parent_nodes
     ]
     parent_label_description_update_tasks = [
         asyncio.create_task(
-            _update_parent_node_label_and_description(parent_node, chunk, llm, concurrency_semaphore, chunk_context=chunk_context)
+            _update_parent_node_label_and_description(
+                parent_node, chunk, llm, concurrency_semaphore,
+                chunk_context=chunk_context, collector=collector,
+            )
         )
         for parent_node in resolved_parent_nodes
         if parent_node["node"].node_type != enums.NodeType.CENTRAL
     ]
-    generate_new_node_task = asyncio.create_task(_generate_new_data_node(chunk, insertion_points, llm, chunk_context=chunk_context))
+    generate_new_node_task = asyncio.create_task(
+        _generate_new_data_node(chunk, insertion_points, llm, chunk_context=chunk_context, collector=collector),
+    )
 
     # Gather all results concurrently
     newly_inserted_node, parent_attachment_plans, parent_label_description_updates = await asyncio.gather(
@@ -123,24 +155,26 @@ def _resolve_parent_nodes(
     data_insertion_points: List[models.CandidateNode],
     prefetched_nodes: dict[str, models.Node],
     prefetched_parents: dict[str, list[models.Node]],
-    central_id: str,
 ) -> List[dict]:
     resolved_parent_map: dict[str, dict] = {}
 
     if central_insertion_point:
+        central_node = prefetched_nodes[central_insertion_point.node_id]
         resolved_parent_map[central_insertion_point.node_id] = {
             "node_id": central_insertion_point.node_id,
-            "node": prefetched_nodes[central_insertion_point.node_id],
-            "capacity_limit": MAX_ROOT_CHILDREN,
+            "node": central_node,
+            "capacity_limit": _capacity_limit_for_node(central_node),
         }
 
+    # Category insertion points attach under the category itself — always use category capacity (8),
+    # and overwrite any stale entry (e.g. if this node was first registered via another code path).
     for category_point in category_insertion_points:
-        if category_point.node_id not in resolved_parent_map:
-            resolved_parent_map[category_point.node_id] = {
-                "node_id": category_point.node_id,
-                "node": prefetched_nodes[category_point.node_id],
-                "capacity_limit": MAX_NODE_CHILDREN,
-            }
+        category_node = prefetched_nodes[category_point.node_id]
+        resolved_parent_map[category_point.node_id] = {
+            "node_id": category_point.node_id,
+            "node": category_node,
+            "capacity_limit": _capacity_limit_for_node(category_node),
+        }
 
     for data_insertion_point in data_insertion_points:
         for parent_of_data_node in prefetched_parents.get(data_insertion_point.node_id, []):
@@ -148,9 +182,7 @@ def _resolve_parent_nodes(
                 resolved_parent_map[parent_of_data_node.node_id] = {
                     "node_id": parent_of_data_node.node_id,
                     "node": parent_of_data_node,
-                    "capacity_limit": (
-                        MAX_ROOT_CHILDREN if parent_of_data_node.node_id == central_id else MAX_NODE_CHILDREN
-                    ),
+                    "capacity_limit": _capacity_limit_for_node(parent_of_data_node),
                 }
 
     return list(resolved_parent_map.values())
@@ -173,6 +205,7 @@ async def _generate_new_data_node(
     insertion_points: List[models.CandidateNode],
     llm: services.LLMService,
     chunk_context: str = "",
+    collector: InsertAuditCollector | None = None,
 ) -> models.Node:
     graph_paths_text = _build_graph_paths_text(insertion_points)
     sys_msg, user_prompt = constants.Prompts.generate_node_label_and_description(
@@ -181,7 +214,9 @@ async def _generate_new_data_node(
         chunk_context=chunk_context,
         llm_provider=llm.provider,
     )
-    llm_response = await invoke_llm_and_parse_json(sys_msg, user_prompt, llm)
+    llm_response = await invoke_llm_traced(
+        sys_msg, user_prompt, llm, collector, "attach", "generate_new_data_node",
+    )
     new_node = models.Node(
         node_id=str(uuid.uuid4()),
         label=llm_response["label"],
@@ -199,10 +234,13 @@ async def _update_parent_node_label_and_description(
     llm: services.LLMService,
     semaphore: asyncio.Semaphore | None = None,
     chunk_context: str = "",
+    collector: InsertAuditCollector | None = None,
 ) -> dict:
     if semaphore is not None:
         async with semaphore:
-            return await _update_parent_node_label_and_description(parent_node, chunk, llm, chunk_context=chunk_context)
+            return await _update_parent_node_label_and_description(
+                parent_node, chunk, llm, chunk_context=chunk_context, collector=collector,
+            )
 
     parent_node_obj: models.Node = parent_node["node"]
     sys_msg, user_prompt = constants.Prompts.update_parent_node_label_and_description(
@@ -212,7 +250,15 @@ async def _update_parent_node_label_and_description(
         chunk_context=chunk_context,
         llm_provider=llm.provider,
     )
-    llm_response = await invoke_llm_and_parse_json(sys_msg, user_prompt, llm)
+    llm_response = await invoke_llm_traced(
+        sys_msg,
+        user_prompt,
+        llm,
+        collector,
+        "attach",
+        "update_parent_label_description",
+        parent_node_id=parent_node_obj.node_id,
+    )
     return {
         "node_id": parent_node_obj.node_id,
         "label": llm_response["label"],
@@ -228,17 +274,21 @@ async def _determine_attachment_plan_for_parent(
     llm: services.LLMService,
     semaphore: asyncio.Semaphore | None = None,
     chunk_context: str = "",
+    collector: InsertAuditCollector | None = None,
 ) -> dict:
     if semaphore is not None:
         async with semaphore:
-            return await _determine_attachment_plan_for_parent(parent_node, chunk, prefetched_children, llm, chunk_context=chunk_context)
+            return await _determine_attachment_plan_for_parent(
+                parent_node, chunk, prefetched_children, llm,
+                chunk_context=chunk_context, collector=collector,
+            )
 
     parent_id = parent_node["node_id"]
     parent = parent_node["node"]
-    capacity_limit = parent_node["capacity_limit"]
-    children = prefetched_children.get(parent_id, [])
+    capacity_limit = _capacity_limit_for_node(parent)
+    child_count = _direct_child_count(prefetched_children, parent_id)
 
-    if len(children) < capacity_limit:
+    if child_count < capacity_limit:
         return {
             "parent_id": parent_id,
             "actions": [],
@@ -246,13 +296,14 @@ async def _determine_attachment_plan_for_parent(
         }
 
     # Parent is at capacity — ask LLM to propose reorganization groups for its children
+    children = prefetched_children.get(parent_id, [])
     children_text = ""
     for child in children:
         if child.node_type == enums.NodeType.CATEGORY:
-            child_count = len(prefetched_children.get(child.node_id, []))
+            category_child_count = len(prefetched_children.get(child.node_id, []))
             children_text += (
                 f"  - node_id={child.node_id!r}, label={child.label!r}, "
-                f"node_type=category, description={child.description!r}, child_count={child_count}\n"
+                f"node_type=category, description={child.description!r}, child_count={category_child_count}\n"
             )
         else:
             children_text += (
@@ -270,7 +321,15 @@ async def _determine_attachment_plan_for_parent(
         chunk_context=chunk_context,
         llm_provider=llm.provider,
     )
-    proposed_groups = await invoke_llm_and_parse_json(sys_msg, user_prompt, llm)
+    proposed_groups = await invoke_llm_traced(
+        sys_msg,
+        user_prompt,
+        llm,
+        collector,
+        "attach",
+        "propose_reorganize_groups",
+        parent_node_id=parent_id,
+    )
 
     # Turn the LLM's proposed groups into an attachment plan in three steps.
     validated_groups = _validate_proposed_groups(proposed_groups, children, prefetched_children)
@@ -282,7 +341,7 @@ async def _determine_attachment_plan_for_parent(
             parent_id,
         )
         return await _generate_umbrella_fallback_plan(
-            parent_id, parent, children, prefetched_children, llm,
+            parent_id, parent, children, prefetched_children, llm, collector=collector,
         )
 
     return _build_reorganization_plan(selected_groups, action_type, parent_id)
@@ -395,6 +454,7 @@ async def _generate_umbrella_fallback_plan(
     nodes_to_wrap: list[models.Node],
     prefetched_children: dict[str, list[models.Node]],
     llm: services.LLMService,
+    collector: InsertAuditCollector | None = None,
 ) -> dict:
     children_text = ""
     for child in nodes_to_wrap:
@@ -409,7 +469,15 @@ async def _generate_umbrella_fallback_plan(
         children_text=children_text.rstrip(),
         llm_provider=llm.provider,
     )
-    llm_response = await invoke_llm_and_parse_json(sys_msg, user_prompt, llm)
+    llm_response = await invoke_llm_traced(
+        sys_msg,
+        user_prompt,
+        llm,
+        collector,
+        "attach",
+        "umbrella_category_fallback",
+        parent_node_id=parent_node_id,
+    )
     return {
         "parent_id": parent_node_id,
         "actions": [
