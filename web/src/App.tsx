@@ -6,6 +6,7 @@ import { Build } from "./pages/Build";
 import { Steps } from "./pages/Steps";
 import { Query } from "./pages/Query";
 import { Settings } from "./pages/Settings";
+import { CheckpointReplay } from "./pages/CheckpointReplay";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="steps" element={<Steps />} />
         <Route path="query" element={<Query />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="replay" element={<CheckpointReplay />} />
       </Route>
     </Routes>
   );

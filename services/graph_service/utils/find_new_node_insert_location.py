@@ -12,6 +12,8 @@ import services
 from core.tracing import traced
 from repository import GraphRepository
 from services.graph_service import models, utils
+from services.graph_service.utils.insert_audit import InsertAuditCollector
+from services.graph_service.utils.llm_utils import invoke_llm_and_parse_json
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +29,7 @@ async def find_insert_location(
     graph_id: uuid.UUID,
     llm: services.LLMService,
     chunk_context: str = "",
+    collector: InsertAuditCollector | None = None,
 ) -> List[models.CandidateNode]:
     potential_parent_nodes: List[models.CandidateNode] = []
     seen_nodes: set[str] = set()
@@ -48,6 +51,7 @@ async def find_insert_location(
         )
     ]
 
+    bfs_iteration = 0
     while nodes_queue:
         # Step 1: Pop the next batch from the frontier
         current_batch = nodes_queue[:MAX_CONCURRENT_EVALUATIONS]
@@ -63,7 +67,16 @@ async def find_insert_location(
 
         # Step 3: Build category scoring tasks and any ready data scoring tasks.
         parents_with_category_children, category_tasks, data_tasks = _build_traversal_tasks_for_insertion_point(
-            current_batch, children_nodes, data_nodes_awaiting_batch_scoring, chunk, llm, chunk_context=chunk_context)
+            current_batch,
+            children_nodes,
+            data_nodes_awaiting_batch_scoring,
+            chunk,
+            llm,
+            chunk_context=chunk_context,
+            collector=collector,
+            bfs_iteration=bfs_iteration,
+        )
+        bfs_iteration += 1
 
         # Step 4: Concurrently run category and data scoring tasks
         category_results, data_results = await asyncio.gather(
@@ -86,7 +99,14 @@ async def find_insert_location(
     # Step 6: Flush any remaining data nodes that didn't fill a full batch during the loop
     if data_nodes_awaiting_batch_scoring:
         flush_tasks = _build_data_node_traversal_tasks_for_insertion_point(
-            data_nodes_awaiting_batch_scoring, chunk, llm, include_remainder=True, chunk_context=chunk_context)
+            data_nodes_awaiting_batch_scoring,
+            chunk,
+            llm,
+            include_remainder=True,
+            chunk_context=chunk_context,
+            collector=collector,
+            bfs_iteration=bfs_iteration,
+        )
         flush_results = await asyncio.gather(*flush_tasks)
         all_data_llm_scoring_results.extend(flush_results)
 
@@ -160,6 +180,8 @@ def _build_category_node_traversal_tasks_for_insertion_point(
     chunk: str,
     llm: services.LLMService,
     chunk_context: str = "",
+    collector: InsertAuditCollector | None = None,
+    bfs_iteration: int = 0,
 ) -> tuple[List[models.CandidateNode], list]:
     parents_with_category_children: List[models.CandidateNode] = []
     category_tasks: list = []
@@ -184,8 +206,22 @@ def _build_category_node_traversal_tasks_for_insertion_point(
             llm_provider=llm.provider,
         )
 
+        audit_seq = None
+        if collector is not None:
+            audit_seq = collector.reserve_call(
+                "find_insert_location",
+                "score_category_children",
+                sys_msg,
+                user_prompt,
+                bfs_iteration=bfs_iteration,
+                parent_node_id=parent_node.node_id,
+                parent_label=parent_node.node.label,
+            )
         task = asyncio.create_task(
-            utils.invoke_llm_and_parse_json(sys_msg, user_prompt, llm))
+            invoke_llm_and_parse_json(
+                sys_msg, user_prompt, llm, collector=collector, audit_seq=audit_seq,
+            ),
+        )
         parents_with_category_children.append(parent_node)
         category_tasks.append(task)
 
@@ -198,6 +234,8 @@ def _build_data_node_traversal_tasks_for_insertion_point(
     llm: services.LLMService,
     include_remainder: bool = False,
     chunk_context: str = "",
+    collector: InsertAuditCollector | None = None,
+    bfs_iteration: int = 0,
 ) -> list:
     data_tasks: list = []
 
@@ -216,8 +254,22 @@ def _build_data_node_traversal_tasks_for_insertion_point(
             llm_provider=llm.provider,
         )
 
+        audit_seq = None
+        if collector is not None:
+            audit_seq = collector.reserve_call(
+                "find_insert_location",
+                "score_data_batch",
+                sys_msg,
+                user_prompt,
+                bfs_iteration=bfs_iteration,
+                batch_index=i,
+                node_ids_scored=[n.node_id for n in data_batch],
+            )
         task = asyncio.create_task(
-            utils.invoke_llm_and_parse_json(sys_msg, user_prompt, llm))
+            invoke_llm_and_parse_json(
+                sys_msg, user_prompt, llm, collector=collector, audit_seq=audit_seq,
+            ),
+        )
         data_tasks.append(task)
 
     return data_tasks
@@ -230,19 +282,32 @@ def _build_traversal_tasks_for_insertion_point(
     chunk: str,
     llm: services.LLMService,
     chunk_context: str = "",
+    collector: InsertAuditCollector | None = None,
+    bfs_iteration: int = 0,
 ) -> tuple[List[models.CandidateNode], list, list]:
     for _, children in children_nodes.items():
         data_nodes_awaiting_batch_scoring.extend(children['data_nodes'])
 
     parents_with_category_children, category_tasks = _build_category_node_traversal_tasks_for_insertion_point(
-        current_batch, children_nodes, chunk, llm, chunk_context=chunk_context,
+        current_batch,
+        children_nodes,
+        chunk,
+        llm,
+        chunk_context=chunk_context,
+        collector=collector,
+        bfs_iteration=bfs_iteration,
     )
 
     if len(data_nodes_awaiting_batch_scoring) < DATA_BATCH_SIZE:
         return parents_with_category_children, category_tasks, []
 
     data_tasks = _build_data_node_traversal_tasks_for_insertion_point(
-        data_nodes_awaiting_batch_scoring, chunk, llm, chunk_context=chunk_context,
+        data_nodes_awaiting_batch_scoring,
+        chunk,
+        llm,
+        chunk_context=chunk_context,
+        collector=collector,
+        bfs_iteration=bfs_iteration,
     )
     return parents_with_category_children, category_tasks, data_tasks
 
